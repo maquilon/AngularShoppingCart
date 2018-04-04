@@ -3,6 +3,7 @@ import { ProductService } from '../product.service';
 import { CategoryService } from '../category.service';
 import { ActivatedRoute } from '@angular/router';
 import { Product } from '../models/product';
+import 'rxjs/add/operator/switchMap';
 
 @Component({
   selector: 'app-products',
@@ -17,17 +18,29 @@ export class ProductsComponent {
 
   constructor(
     route: ActivatedRoute,
-    productService: ProductService, categoryService: CategoryService) { 
-    productService.getAll().subscribe(products => this.products = products);
+    productService: ProductService,
+    categoryService: CategoryService) {
+
+    productService
+      .getAll()
+      .switchMap(products => {
+        this.products = products;
+        return route.queryParamMap;
+      })
+
+      .subscribe(params => {
+        this.category = params.get('category');
+
+        this.filteredProducts = (this.category) ?
+          this.products.filter(p => p.category === this.category) :
+          this.products;
+
+      });
+
+
     this.categories$ = categoryService.getAll();
 
-    route.queryParamMap.subscribe(params => {
-      this.category = params.get('category');
-      this.filteredProducts = (this.category) ?
-        this.products.filter(p => p.category === this.category) :
-        this.products;
 
-    });
   }
 
 
