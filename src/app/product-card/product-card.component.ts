@@ -14,13 +14,17 @@ export class ProductCardComponent {
 
   constructor(private shoppingCartServices: ShoppingCartService) { }
 
-  addToCart(product: Product) {
-    this.shoppingCartServices.addToCart(product);
+  addToCart() {
+    this.shoppingCartServices.addToCart(this.product);
+  }
+
+  removeFromCart() {
+    this.shoppingCartServices.removeFromCart(this.product);
   }
 
   getQuantity() {
     if (!this.shoppingCart) return 0;
-    
+
     let item = this.shoppingCart.items[this.product.$key];
     return item ? item.quantity : 0;
   }
